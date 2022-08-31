@@ -36,11 +36,12 @@ class Egreso extends Dato {
         return this._id;
     }
 }
-const ingresos = [new Ingreso("Salario", 3500.0), new Ingreso("Tinka", 100.0)];
-const egresos = [
-    new Egreso("Renta", 1000.0),
-    new Egreso("Reparacion pc", 300.0),
-];
+const ingresos = [new Ingreso("Salario", 2100.0), new Ingreso("Tinka", 1500.0)];
+const egresos = [new Egreso("Renta", 900.0), new Egreso("Reparacion pc", 400.0)];
+function cargarApp() {
+    cargarCabecero();
+    cargarIngresos();
+}
 function totalIngresos() {
     let totalIngresos = 0;
     for (let i of ingresos) {
@@ -57,22 +58,11 @@ function totalEgresos() {
 }
 function cargarCabecero() {
     let presupuesto = totalIngresos() - totalEgresos();
-    let porcentajeEgreso = `${Math.round(
-        (totalEgresos() / totalIngresos()) * 100
-    )}%`;
-    document.getElementById("presupuesto").innerHTML =
-        formatoMoneda(presupuesto);
+    let porcentajeEgreso = `${Math.round((totalEgresos() / totalIngresos()) * 100)}%`;
+    document.getElementById("presupuesto").innerHTML = formatoMoneda(presupuesto);
     document.getElementById("porcentaje").innerHTML = porcentajeEgreso;
-    document.getElementById("ingresos").innerHTML = formatoMoneda(
-        totalIngresos()
-    );
-    document.getElementById("egresos").innerHTML = formatoMoneda(
-        totalEgresos()
-    );
-}
-function cargarApp() {
-    cargarCabecero();
-    cargarIngresos();
+    document.getElementById("ingresos").innerHTML = formatoMoneda(totalIngresos());
+    document.getElementById("egresos").innerHTML = formatoMoneda(totalEgresos());
 }
 function formatoMoneda(value) {
     return value.toLocaleString("en-US", {
@@ -83,10 +73,15 @@ function formatoMoneda(value) {
 }
 function cargarIngresos() {
     let ingresosHTML = "";
+    let egresosHTML = "";
     for (let i of ingresos) {
         ingresosHTML += crearIngresoHtml(i);
     }
+    for (let i of egresos) {
+        egresosHTML += crearEgresosHtml(i);
+    }
     document.getElementById("lista-ingresos").innerHTML = ingresosHTML;
+    document.getElementById("lista-egresos").innerHTML = egresosHTML;
 }
 function crearIngresoHtml(value) {
     let ingresoHtml = `
@@ -96,10 +91,38 @@ function crearIngresoHtml(value) {
         <div class="elemento_valor">${formatoMoneda(value.valor)}</div>
         <div class="elemento_eliminar">
             <button class="elemento_eliminar--btn">
-                <ion-icon name="trash-outline"></ion-icon>
+                <ion-icon name="trash-outline" onclick={eliminarIngreso(${value.id})}></ion-icon>
             </button>
         </div>
     </div>
 </div>`;
     return ingresoHtml;
+}
+function eliminarIngreso(id) {
+    let indiceEliminar = ingresos.findIndex((ingreso) => ingreso.id === id);
+    ingresos.splice(indiceEliminar, 1);
+    cargarCabecero();
+    cargarIngresos();
+}
+function crearEgresosHtml(value) {
+    let egresosHTML = `
+    <div class="elemento limpiarEstilos">
+    <div class="elemento_descripcion">${value.descripccion}</div>
+    <div class="derecha limpiarEstilos">
+        <div class="elemento_valor">${formatoMoneda(value.valor)}</div>
+        <div class="elemento_porcentaje">${Math.round((value.valor / totalIngresos()) * 100)}%</div>
+        <div class="elemento_eliminar">
+            <button class="elemento_eliminar--btn">
+                <ion-icon name="trash-outline" onclick="eliminarEgreso(${value.id})"></ion-icon>
+            </button>
+        </div>
+    </div>
+    </div>`;
+    return egresosHTML;
+}
+function eliminarEgreso(id) {
+    let indiceEliminar = egresos.findIndex((ingreso) => ingreso.id === id);
+    egresos.splice(indiceEliminar, 1);
+    cargarCabecero();
+    cargarIngresos();
 }
