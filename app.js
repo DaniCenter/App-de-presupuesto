@@ -36,10 +36,7 @@ class Egreso extends Dato {
         return this._id;
     }
 }
-const ingresos = [
-    new Ingreso("Salario", 3500.0),
-    new Ingreso("Salario", 100.0),
-];
+const ingresos = [new Ingreso("Salario", 3500.0), new Ingreso("Tinka", 100.0)];
 const egresos = [
     new Egreso("Renta", 1000.0),
     new Egreso("Reparacion pc", 300.0),
@@ -75,6 +72,7 @@ function cargarCabecero() {
 }
 function cargarApp() {
     cargarCabecero();
+    cargarIngresos();
 }
 function formatoMoneda(value) {
     return value.toLocaleString("en-US", {
@@ -82,4 +80,26 @@ function formatoMoneda(value) {
         currency: "USD",
         minimunFractionsDigits: 2,
     });
+}
+function cargarIngresos() {
+    let ingresosHTML = "";
+    for (let i of ingresos) {
+        ingresosHTML += crearIngresoHtml(i);
+    }
+    document.getElementById("lista-ingresos").innerHTML = ingresosHTML;
+}
+function crearIngresoHtml(value) {
+    let ingresoHtml = `
+    <div class="elemento limpiarEstilos">
+    <div class="elemento_descripcion">${value.descripccion}</div>
+    <div class="derecha limpiarEstilos">
+        <div class="elemento_valor">${formatoMoneda(value.valor)}</div>
+        <div class="elemento_eliminar">
+            <button class="elemento_eliminar--btn">
+                <ion-icon name="trash-outline"></ion-icon>
+            </button>
+        </div>
+    </div>
+</div>`;
+    return ingresoHtml;
 }
